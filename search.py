@@ -73,6 +73,30 @@ def tinyMazeSearch(problem):
     return [s, s, w, s, w, w, s, w]
 
 
+def dfsUtil(problem, visitados, atual, caminho):
+    termiei = False
+    print(atual)
+ 
+    if (problem.isGoalState(atual)):
+        return True
+
+    visitados.add(atual)     
+    vizinhos = problem.getSuccessors(atual)
+    
+    for no in vizinhos:
+        if (no[0] not in visitados):
+            caminho.push(no)
+            termiei = dfsUtil(problem, visitados , no[0], caminho)
+            
+            if (termiei):
+                return True
+
+
+    if (not termiei):
+        caminho.pop()
+
+    return False    
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -87,13 +111,26 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
+
+    visitados = set()
+    atual = problem.getStartState()
+    caminho  = util.Stack()
+    dfsUtil(problem, visitados, atual, caminho)
+    
+    
+    #https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/
+    #https://pt.wikipedia.org/wiki/Busca_em_profundidade
+    #https://www.geeksforgeeks.org/iterative-depth-first-traversal/?ref=leftbar-rightbar
     util.raiseNotDefined()
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+
+
+
+    
     util.raiseNotDefined()
 
 
