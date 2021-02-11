@@ -196,11 +196,7 @@ def uniformCostSearch(problem):
     for i in reversed(result):
         print(i)
 
-    
-    
-    
-    
-    
+
     
     
     util.raiseNotDefined()
@@ -216,7 +212,48 @@ def nullHeuristic(state, problem=None):
 
 def greedySearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest heuristic first."""
-    "*** YOUR CODE HERE ***"
+    
+    
+    print("aaaaaaaaaaaaaaaac")
+    
+    atual = problem.getStartState()
+    
+    fila = util.PriorityQueue()
+    visitados = set()
+    caminho = {}
+    result = []
+    heurist_value =  heuristic(problem.getStartState(), problem)
+    fila.push( (problem.getStartState() ,"", heurist_value), heurist_value) 
+    visitados.add(problem.getStartState())
+ 
+    #Visita todos os nos por bfs
+    while  (not fila.isEmpty()):             
+        atual, x, custo = fila.pop()
+        caminho[atual] = x 
+        vizinhos = problem.getSuccessors(atual)
+        
+        for no in vizinhos:
+            heurist_value = heuristic(atual, problem)
+            if( problem.isGoalState(no[0])):
+                caminho[no[0]] = (atual, no[1])   
+                break
+            
+            if (no[0] not in visitados):
+                fila.push( (no[0], (atual,no[1]), custo + heurist_value), custo + heurist_value) 
+                visitados.add(no[0])
+                
+   
+    #backtrack para montar o caminho da solucao
+    ite = list(caminho.keys())[-1]
+    while ite != problem.getStartState(): 
+        result.append(caminho[ite])
+        ite = caminho[ite][0]
+    
+    #solucao
+    for i in reversed(result):
+        print(i)
+
+
     util.raiseNotDefined()
 
 
