@@ -99,24 +99,13 @@ def dfsUtil(problem, visitados, atual, caminho):
 
 def depthFirstSearch(problem):
     """
-    Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    Search the deepest nodes in the search tree first. ''
     """
 
     visitados = set()
     atual = problem.getStartState()
     caminho  = util.Stack()
     dfsUtil(problem, visitados, atual, caminho)
-    
     
     #https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/
     #https://pt.wikipedia.org/wiki/Busca_em_profundidade
@@ -126,7 +115,6 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
     
     fila = []
     visitados = set()
@@ -150,24 +138,71 @@ def breadthFirstSearch(problem):
                 fila.append( (no[0], (atual,no[1])) ) 
                 visitados.add(no[0])
                 
-    
     #backtrack para montar o caminho da solucao
     ite = list(caminho.keys())[-1]
     while ite != problem.getStartState(): 
         result.append(caminho[ite])
         #print(ite, caminho[ite])
         ite = caminho[ite][0]
-
     #solucao
     for i in reversed(result):
         print(i)
 
+
+
+
+
+    #https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/
+    #https://en.wikipedia.org/wiki/Breadth-first_search
     util.raiseNotDefined()
 
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+    
+    fila = util.PriorityQueue()
+    visitados = set()
+    caminho = {}
+    result = []
+
+    fila.push( (problem.getStartState() ,"", 0), 0 )
+    visitados.add(problem.getStartState())
+ 
+    #Visita todos os nos por bfs
+    while  (not fila.isEmpty()):        
+        
+        atual, x, custo = fila.pop()
+        
+        caminho[atual] = x 
+        
+        vizinhos = problem.getSuccessors(atual)
+        for no in vizinhos:
+            
+            if( problem.isGoalState(no[0])):
+                caminho[no[0]] = (atual, no[1])   
+                break
+            
+            if (no[0] not in visitados):
+                fila.push( (no[0], (atual,no[1]), custo + no[2]), custo + no[2]) 
+                visitados.add(no[0])
+                
+    #backtrack para montar o caminho da solucao
+    ite = list(caminho.keys())[-1]
+    while ite != problem.getStartState(): 
+        result.append(caminho[ite])
+        ite = caminho[ite][0]
+    
+    #solucao
+    for i in reversed(result):
+        print(i)
+
+    
+    
+    
+    
+    
+    
+    
     util.raiseNotDefined()
 
 
