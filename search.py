@@ -127,10 +127,41 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-
-
-
     
+    fila = []
+    visitados = set()
+    caminho = {}
+    result = []
+
+    fila.append( (problem.getStartState(), "") )
+    visitados.add(problem.getStartState())
+
+    #Visita todos os nos por bfs
+    while (len(fila) != 0 ):
+        atual, x = fila.pop(0)
+        caminho[atual] = x 
+        vizinhos = problem.getSuccessors(atual)
+        
+        for no in vizinhos:
+            if( problem.isGoalState(no[0])):
+                caminho[no[0]] = (atual, no[1])   
+                break
+            if (no[0] not in visitados):
+                fila.append( (no[0], (atual,no[1])) ) 
+                visitados.add(no[0])
+                
+    
+    #backtrack para montar o caminho da solucao
+    ite = list(caminho.keys())[-1]
+    while ite != problem.getStartState(): 
+        result.append(caminho[ite])
+        #print(ite, caminho[ite])
+        ite = caminho[ite][0]
+
+    #solucao
+    for i in reversed(result):
+        print(i)
+
     util.raiseNotDefined()
 
 
