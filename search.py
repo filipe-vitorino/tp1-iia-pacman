@@ -74,9 +74,8 @@ def tinyMazeSearch(problem):
 
 
 def dfsUtil(problem, visitados, atual, caminho):
+    
     termiei = False
-    print(atual)
- 
     if (problem.isGoalState(atual)):
         return True
 
@@ -86,7 +85,7 @@ def dfsUtil(problem, visitados, atual, caminho):
     for no in vizinhos:
         if (no[0] not in visitados):
             caminho.push(no)
-            termiei = dfsUtil(problem, visitados , no[0], caminho)
+            termiei = dfsUtil(problem, visitados , no[0], caminho)            
             
             if (termiei):
                 return True
@@ -97,110 +96,127 @@ def dfsUtil(problem, visitados, atual, caminho):
 
     return False    
 
-def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first. ''
-    """
 
+#https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/
+#https://pt.wikipedia.org/wiki/Busca_em_profundidade
+#https://www.geeksforgeeks.org/iterative-depth-first-traversal/?ref=leftbar-rightbar
+def depthFirstSearch(problem):
+    
+    """
+    
+    Search the deepest nodes in the search tree first. ''
+    
+    """
+    
     visitados = set()
     atual = problem.getStartState()
     caminho  = util.Stack()
+    result = []
+    
     dfsUtil(problem, visitados, atual, caminho)
     
-    #https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/
-    #https://pt.wikipedia.org/wiki/Busca_em_profundidade
-    #https://www.geeksforgeeks.org/iterative-depth-first-traversal/?ref=leftbar-rightbar
-    util.raiseNotDefined()
+    while(not caminho.isEmpty()):
+        x =  caminho.pop()
+        result.append(x[1]) 
+        """ 
+        if (x[1] == 'South'):
+            result.append(s)
+        if (x[1] == 'West'):
+            result.append(w)
+        if (x[1] == 'East'):
+            result.append(e)
+        if (x[1] == 'Noth'):
+            result.append(n)
+        """
+    result.reverse()
+    return result
 
-
+#https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/
+#https://en.wikipedia.org/wiki/Breadth-first_search
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     
-    fila = []
+    fila = util.Queue()
     visitados = set()
     caminho = {}
     result = []
 
-    fila.append( (problem.getStartState(), "") )
+    fila.push( (problem.getStartState(), "") )
     visitados.add(problem.getStartState())
 
     #Visita todos os nos por bfs
-    while (len(fila) != 0 ):
-        atual, x = fila.pop(0)
+    while (not fila.isEmpty()):
+        
+        atual, x = fila.pop()
         caminho[atual] = x 
+        
+        if(problem.isGoalState(atual)):
+            break
+        
         vizinhos = problem.getSuccessors(atual)
         
         for no in vizinhos:
-            if( problem.isGoalState(no[0])):
-                caminho[no[0]] = (atual, no[1])   
-                break
+            #if (problem.isGoalState(no[0])):
+                #caminho[no[0]] = (atual, no[1])   
+                #break
             if (no[0] not in visitados):
-                fila.append( (no[0], (atual,no[1])) ) 
+                fila.push( (no[0], (atual,no[1])) ) 
                 visitados.add(no[0])
                 
+    
+
     #backtrack para montar o caminho da solucao
     ite = list(caminho.keys())[-1]
     while ite != problem.getStartState(): 
-        result.append(caminho[ite])
+        result.append(caminho[ite][1])
         #print(ite, caminho[ite])
         ite = caminho[ite][0]
-    #solucao
-    for i in reversed(result):
-        print(i)
+  
+    #solucao   
+    result.reverse()
+    print (result)
+    return result
 
-
-
-
-
-    #https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/
-    #https://en.wikipedia.org/wiki/Breadth-first_search
-    util.raiseNotDefined()
-
+   
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    
+
     fila = util.PriorityQueue()
     visitados = set()
     caminho = {}
     result = []
-
     fila.push( (problem.getStartState() ,"", 0), 0 )
     visitados.add(problem.getStartState())
- 
+    
     #Visita todos os nos por bfs
-    while  (not fila.isEmpty()):        
-        
+    while  (not fila.isEmpty()):    
+
         atual, x, custo = fila.pop()
-        
         caminho[atual] = x 
         
+        if(problem.isGoalState(atual)):
+            break
+        
         vizinhos = problem.getSuccessors(atual)
+        
         for no in vizinhos:
-            
-            if( problem.isGoalState(no[0])):
-                caminho[no[0]] = (atual, no[1])   
-                break
-            
             if (no[0] not in visitados):
-                fila.push( (no[0], (atual,no[1]), custo + no[2]), custo + no[2]) 
-                visitados.add(no[0])
+                fila.update( (no[0], (atual,no[1]), custo + no[2]), custo + no[2]) 
+                if (not problem.isGoalState(no[0])):
+                    visitados.add(no[0])
                 
-    #backtrack para montar o caminho da solucao
+   
     ite = list(caminho.keys())[-1]
     while ite != problem.getStartState(): 
-        result.append(caminho[ite])
+        result.append(caminho[ite][1])
         ite = caminho[ite][0]
     
     #solucao
-    for i in reversed(result):
-        print(i)
+    result.reverse()
+    #print(result)
 
-
-    
-    
-    util.raiseNotDefined()
-
+    return result
 
 def nullHeuristic(state, problem=None):
     """
@@ -209,7 +225,8 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-
+#https://en.wikipedia.org/wiki/Maze_solving_algorithm
+#http://bryukh.com/labyrinth-algorithms
 def greedySearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest heuristic first."""
     
