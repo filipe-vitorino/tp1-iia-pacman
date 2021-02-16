@@ -174,7 +174,6 @@ def breadthFirstSearch(problem):
   
     #solucao   
     result.reverse()
-    print (result)
     return result
 
    
@@ -205,7 +204,8 @@ def uniformCostSearch(problem):
                 fila.update( (no[0], (atual,no[1]), custo + no[2]), custo + no[2]) 
                 if (not problem.isGoalState(no[0])):
                     visitados.add(no[0])
-                
+        
+        #caminho[atual] = x 
    
     ite = list(caminho.keys())[-1]
     while ite != problem.getStartState(): 
@@ -229,55 +229,109 @@ def nullHeuristic(state, problem=None):
 #http://bryukh.com/labyrinth-algorithms
 def greedySearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest heuristic first."""
-    
-    
-    print("aaaaaaaaaaaaaaaac")
-    
+
     atual = problem.getStartState()
-    
     fila = util.PriorityQueue()
     visitados = set()
     caminho = {}
-    result = []
-    heurist_value =  heuristic(problem.getStartState(), problem)
-    fila.push( (problem.getStartState() ,"", heurist_value), heurist_value) 
-    visitados.add(problem.getStartState())
- 
+    result = []    
+    heurist_value = heuristic(problem.getStartState(), problem)
+    
+    fila.push( (problem.getStartState() ,""), heurist_value) 
+    visitados.add(problem.getStartState())  
+    
     #Visita todos os nos por bfs
     while  (not fila.isEmpty()):             
-        atual, x, custo = fila.pop()
+
+        atual, x = fila.pop()
         caminho[atual] = x 
-        vizinhos = problem.getSuccessors(atual)
+
+        if(problem.isGoalState(atual)):
+            break
         
+        vizinhos = problem.getSuccessors(atual)
+
         for no in vizinhos:
-            heurist_value = heuristic(atual, problem)
-            if( problem.isGoalState(no[0])):
-                caminho[no[0]] = (atual, no[1])   
-                break
-            
             if (no[0] not in visitados):
-                fila.push( (no[0], (atual,no[1]), custo + heurist_value), custo + heurist_value) 
+                heurist_value = heuristic(no[0], problem)
+                fila.push( (no[0], (atual,no[1])), heurist_value) 
                 visitados.add(no[0])
                 
-   
+                
     #backtrack para montar o caminho da solucao
     ite = list(caminho.keys())[-1]
+    
     while ite != problem.getStartState(): 
-        result.append(caminho[ite])
+        result.append(caminho[ite][1])
         ite = caminho[ite][0]
     
-    #solucao
-    for i in reversed(result):
-        print(i)
+    result.reverse()
 
-
-    util.raiseNotDefined()
-
+    return result
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+
+    open_list = util.PriorityQueue()
+    close_list = set()
+
+    caminho = {}
+    g_cost = {}    
+
+    result = []    
+
+    atual = problem.getStartState()
+    #heurist_value = heuristic(atual, problem)
+    
+    open_list.push(atual, 0) 
+    caminho[atual] = ("", "")
+    g_cost[atual] = 0
+
+    while(not open_list.isEmpty()):             
+        
+      #  open_list.printa()
+        atual = open_list.pop()        
+        #print(g_cost[atual] + heuristic(atual, problem))
+        #caminho[atual] = x 
+        if(problem.isGoalState(atual)):
+            final = atual
+            break
+        
+        close_list.add(atual)
+        vizinhos = problem.getSuccessors(atual)
+        
+        for no in vizinhos:
+            tentative_gCost = g_cost[atual] + no[2] 
+            #
+            if no[0] in close_list and tentative_gCost >= g_cost[no[0]]:
+                continue
+            if (no[0] not in g_cost or tentative_gCost < g_cost[no[0]]):
+                caminho[no[0]] = (atual, no[1])
+                g_cost[no[0]] = tentative_gCost
+                h_cost = heuristic(no[0], problem)
+                f_cost = g_cost[no[0]] + h_cost
+                open_list.update(no[0], f_cost) 
+            #if( no[0] not in close_list or tentative_gCost < g_cost[no[0]]):
+
+
+    itr = caminho[final] 
+    while(itr[0] != "" ):
+       # print("to em :", itr[1])
+        result.append(itr[1] )
+        itr = caminho[itr[0]]
+        #result.append(caminho[itr[0]][1])
+
+    result.reverse()
+    #print(result)
+    #backtrack para montar o caminho da solucao
+    """
+    https://www.redblobgames.com/pathfinding/a-star/introduction.html
+    https://www.youtube.com/watch?v=-L-WgKMFuhE
+    https://en.wikipedia.org/wiki/A*_search_algorithm
+"""
+    return result
 
 
 def foodHeuristic(state, problem):
@@ -309,8 +363,10 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+    print (foodGrid.asList())
+    
     "*** YOUR CODE HERE ***"
-    return 0
+    return 1
 
 
 # Abbreviations
